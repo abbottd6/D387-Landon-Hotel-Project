@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +31,6 @@ public class MessageMapping{
     String welcome_en;
     String welcome_fr;
     Properties prop = new Properties();
-
 
     @RequestMapping(path = "/welcome", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public String[] displayMessage() throws InterruptedException {
@@ -71,6 +74,28 @@ public class MessageMapping{
         return welcomeMessage;
     }
 
+
+    @RequestMapping(path = "/presentation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public String[] presentationMessage() {
+        List<String> convertedTimes = new ArrayList<>();
+        String[] presentationMessage;
+        LocalDateTime presentationTime = LocalDateTime.of(2024, 8, 23,1,30);
+
+        ZonedDateTime utcTime = presentationTime.atZone(ZoneId.of("UTC"));
+        ZonedDateTime mtTime = utcTime.withZoneSameInstant(ZoneId.of("America/Denver"));
+        ZonedDateTime eastTime = utcTime.withZoneSameInstant(ZoneId.of("America/New_York"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        convertedTimes.add((utcTime.format(formatter)));
+        convertedTimes.add(mtTime.format(formatter));
+        convertedTimes.add(eastTime.format(formatter));
+
+        presentationMessage = new String[]{"Come join us for a live web presentation exclusively on the Landon " +
+                "Hotel website Friday, August 23rd at: " + convertedTimes.get(0) + " UTC, "
+                + convertedTimes.get(1) + " MT, and " + convertedTimes.get(2) + "ET."};
+
+        return presentationMessage;
+    }
 
 
 }
